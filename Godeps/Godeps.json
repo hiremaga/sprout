@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/hiremaga/sprout",
+	"GoVersion": "go1.1.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.0.0-33-g8242fd8",
+			"Rev": "8242fd818cfa92ef1393938524b2ea4e9e12b451"
+		}
+	]
+}
