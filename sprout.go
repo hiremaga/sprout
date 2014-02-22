@@ -9,7 +9,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "sprout"
-	app.Usage = "Automatically configure of your Mac"
+	app.Usage = "Configure your Mac"
 
 	app.Commands = []cli.Command{
 		commands.Init,
