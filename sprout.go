@@ -1,20 +1,21 @@
 package main
 
 import (
-	"github.com/codegangsta/cli"
-	"github.com/hiremaga/sprout/commands"
 	"os"
+	"os/exec"
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "sprout"
-	app.Usage = "Configure your Mac"
+	soloist := `
+	require 'rubygems'
 
-	app.Commands = []cli.Command{
-		commands.Init,
-		commands.Run,
-	}
-
-	app.Run(os.Args)
+	gem 'soloist', '>= 1.0.3'
+	$0 = 'sprout' 
+	load Gem.bin_path('soloist', 'soloist', '>= 1.0.3')
+	`
+	cmd := exec.Command("/usr/bin/ruby", append([]string{"-e", soloist, "--"}, os.Args[1:]...)...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = []string{} // clean env to ensure system ruby
+	cmd.Run()
 }
