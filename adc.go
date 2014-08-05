@@ -1,49 +1,62 @@
-package adc
+package sprout
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+
+	"github.com/howeyc/gopass"
 )
 
-type Session struct {
-	client http.Client
+type ADC struct {
+	client   http.Client
+	username string
+	password string
 }
 
-func NewSession() (Session, error) {
+func NewADC() (ADC, error) {
 	jar, err := cookiejar.New(&cookiejar.Options{})
 	if err != nil {
-		return Session{}, err
+		return ADC{}, err
 	}
 
 	client := http.Client{Jar: jar}
-	return Session{client}, nil
+	return ADC{client: client}, nil
 }
 
-func (s Session) Start() error {
+func (adc *ADC) AskCredentials() {
+	fmt.Print("ADC username: ")
+	fmt.Scanf("%s\n", &adc.username)
+
+	fmt.Print("ADC password: ")
+	adc.password = string(gopass.GetPasswdMasked())
+}
+
+func (adc ADC) StartSession() error {
 	loginUrl := "https://idmsa.apple.com/IDMSWebAuth/login?&appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2F%2Fmembercenter%2Flogin.action"
-	resp, err := s.client.Get(loginUrl)
+	resp, err := adc.client.Get(loginUrl)
 	defer resp.Body.Close()
 
 	return err
 }
 
-func (s Session) Login(creds Credentials) error {
+func (adc ADC) Login() error {
 	formUrl := "https://idmsa.apple.com/IDMSWebAuth/authenticate"
 	values := url.Values{}
-	values.Add("appleId", creds.username)
-	values.Add("accountPassword", creds.password)
+	values.Add("appleId", adc.username)
+	values.Add("accountPassword", adc.password)
 
-	resp, err := s.client.PostForm(formUrl, values)
+	resp, err := adc.client.PostForm(formUrl, values)
 	defer resp.Body.Close()
 
 	return err
 }
 
-func (s Session) DownloadXCodeCliTools(dmgFile io.Writer) error {
+func (adc ADC) DownloadXCodeCliTools(dmgFile io.Writer) error {
 	dmgUrl := "https://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_mavericks_for_xcode__march_2014/commandline_tools_os_x_mavericks_for_xcode__march_2014.dmg"
-	resp, err := s.client.Get(dmgUrl)
+	resp, err := adc.client.Get(dmgUrl)
 	defer resp.Body.Close()
 
 	if err != nil {

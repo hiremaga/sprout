@@ -4,26 +4,24 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hiremaga/sprout/adc"
+	"github.com/hiremaga/sprout"
 )
 
 func main() {
-	creds := adc.Credentials{}
-	creds.Ask()
-
-	session, err := adc.NewSession()
+	adc, err := sprout.NewADC()
 	if err != nil {
-		fmt.Printf("Could not create ADC session: %v", err)
+		fmt.Printf("Could not create ADC adc: %v", err)
 		os.Exit(1)
 	}
 
-	err = session.Start()
+	err = adc.StartSession()
 	if err != nil {
-		fmt.Printf("Error loading ADC login page to start session: %v", err)
+		fmt.Printf("Error loading ADC login page to start adc: %v", err)
 		os.Exit(1)
 	}
 
-	err = session.Login(creds)
+	adc.AskCredentials()
+	err = adc.Login()
 	if err != nil {
 		fmt.Printf("Error logging in to ADC: %v", err)
 		os.Exit(1)
@@ -37,7 +35,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = session.DownloadXCodeCliTools(dmgFile)
+	err = adc.DownloadXCodeCliTools(dmgFile)
 	if err != nil {
 		fmt.Printf("Error download XCode CLI tools dmg: %v", err)
 		os.Exit(1)

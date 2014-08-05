@@ -1,13 +1,13 @@
-package soloist
+package sprout
 
-import (
-	"os"
+import "os"
 
-	"github.com/hiremaga/sprout/ruby"
-)
+type Soloist struct {
+	ruby Ruby
+}
 
-func Run() error {
-	return ruby.Exec(`
+func (s Soloist) Run() error {
+	return s.ruby.Exec(`
 	require 'rubygems'
 
 	gem 'soloist', '>= 1.0.3'
