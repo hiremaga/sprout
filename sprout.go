@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	install("soloist", ">= 1.0.3")
-	install("librarian-chef", ">= 0.0.4")
+	installGem("soloist", ">= 1.0.3")
+	installGem("librarian-chef", ">= 0.0.4")
 
 	soloist := `
 	require 'rubygems'
@@ -18,27 +18,22 @@ func main() {
 	`
 
 	cmd := exec.Command("/usr/bin/ruby", append([]string{"-e", soloist}, os.Args[1:]...)...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Env = []string{
-		os.ExpandEnv("PATH=${PATH}"),
-	} // clean env to ensure system ruby
+	attachAllStreams(cmd)
+	ensureSystemRuby(cmd)
 
 	if err := cmd.Run(); err != nil {
 		os.Exit(1)
 	}
 }
 
-func install(name, version string) error {
-	check := exec.Command("/usr/bin/gem", "list", "--installed", name, "--version", version)
-	check.Env = []string{}
+func installGem(name, version string) error {
+	check := exec.Command("/usr/bin/gem", "list", "--install", name, "--version", version)
+	ensureSystemRuby(check)
 
 	if err := check.Run(); err != nil {
 		install := exec.Command("/usr/bin/sudo", "/usr/bin/gem", "install", "--no-ri", "--no-rdoc", name, "-v", version)
-		install.Stdin = os.Stdin
-		install.Stdout = os.Stdout
-		install.Stderr = os.Stderr
-		install.Env = []string{} // clean env to ensure system ruby
+		attachAllStreams(install)
+		ensureSystemRuby(install)
 
 		if err = install.Run(); err != nil {
 			return err
@@ -46,4 +41,16 @@ func install(name, version string) error {
 	}
 
 	return nil
+}
+
+func ensureSystemRuby(cmd *exec.Cmd) {
+	cmd.Env = []string{
+		os.ExpandEnv("PATH=${PATH}"),
+	}
+}
+
+func attachAllStreams(cmd *exec.Cmd) {
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 }
