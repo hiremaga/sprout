@@ -20,7 +20,9 @@ func main() {
 	cmd := exec.Command("/usr/bin/ruby", append([]string{"-e", soloist}, os.Args[1:]...)...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Env = []string{} // clean env to ensure system ruby
+	cmd.Env = []string{
+		os.ExpandEnv("PATH=${PATH}"),
+	} // clean env to ensure system ruby
 
 	if err := cmd.Run(); err != nil {
 		os.Exit(1)
