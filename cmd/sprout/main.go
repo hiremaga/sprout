@@ -13,7 +13,7 @@ func main() {
 	require 'rubygems'
 
 	gem 'soloist', '>= 1.0.3'
-	$0 = 'sprout' 
+	$0 = 'sprout'
 	load Gem.bin_path('soloist', 'soloist', '>= 1.0.3')
 	`
 
