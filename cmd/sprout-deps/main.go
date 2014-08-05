@@ -38,4 +38,10 @@ func main() {
 		fmt.Printf("Error download XCode CLI tools dmg: %v", err)
 		os.Exit(1)
 	}
+
+	err = xcode.InstallCliTools()
+	if err != nil {
+		fmt.Printf("Error installing XCode CLI tools: %v", err)
+		os.Exit(1)
+	}
 }
