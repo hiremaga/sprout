@@ -54,9 +54,8 @@ func (adc ADC) Login() error {
 	return err
 }
 
-func (adc ADC) DownloadXCodeCliTools(dmgFile io.Writer) error {
-	dmgUrl := "https://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_mavericks_for_xcode__march_2014/commandline_tools_os_x_mavericks_for_xcode__march_2014.dmg"
-	resp, err := adc.client.Get(dmgUrl)
+func (adc ADC) Download(url string, dmgFile io.Writer) error {
+	resp, err := adc.client.Get(url)
 	defer resp.Body.Close()
 
 	if err != nil {
