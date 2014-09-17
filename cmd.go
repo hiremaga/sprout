@@ -16,6 +16,8 @@ func Command(path string, args ...string) Cmd {
 func (cmd *Cmd) EnsureSystemRuby() {
 	cmd.Env = []string{
 		os.ExpandEnv("PATH=${PATH}"),
+		os.ExpandEnv("USER=${USER}"),
+		os.ExpandEnv("HOME=${HOME}"),
 	}
 }
 
